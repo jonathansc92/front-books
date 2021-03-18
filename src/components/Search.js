@@ -1,28 +1,34 @@
-import React, { Component, useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Input,   Card, CardImg, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Form, Input, Card, CardImg, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
 import  api from "../services/api";
-import imgDefault from 'http://books.google.com/books/content?id=Fgx6DwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api';
+import { MdStarBorder } from 'react-icons/md';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const Search = (props) => {
+const Search = () => {
 
   const [book, setBook] = React.useState("");
   const [results, setResults] = useState([])
-
-  const findBook = (e) => {
-    if (e.charCode === 13) {
-      alert(setBook(e.target.value))
-    }
+  
+  const addFavorites = (name, volumeId) => {
+      api.post("/booklist", {
+          name: name,
+          volume_id: volumeId
+      }).then(response => {
+        toast(response.data.data.message)
+      })
+      .catch(err => {
+        toast('Este livro já está em seus favoritos')
+      });
   }
-
+  
   useEffect(() => {
-    console.log(book)
     const search = async () => {
       const { data } = await api.get("/books/search", {
         params: {
           q: book,
         },
       })
-      console.log(data)
       setResults(data.items)
     }
     search()
@@ -38,19 +44,25 @@ const Search = (props) => {
           </Col>
         </Row>
         <Row>
-          {results.map((result) => (
-            <Col xs="2" style={{paddingBottom: 50}}>
-            <Card>
-        <CardImg top width="100%" src={imgDefault} alt={result.volumeInfo.title} />
-        <CardBody>
-          <CardTitle tag="h6">{`${result.volumeInfo.title.substring(0, 20)}...`}</CardTitle>
-          <CardSubtitle tag="h6" className="mb-2 text-muted">{result.volumeInfo.author}</CardSubtitle>
-          <Button>Button</Button>
-        </CardBody>
-      </Card>
-            </Col>               
-            ))}
+            { results.length > 0 ? (
+             results.map((book) => (
+                <Col xs="3">
+                    <Card>
+                        <CardImg top width="100%" src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
+                        <CardBody>
+                            <CardTitle tag="h6">{`${book.volumeInfo.title.substring(0, 20)}...`}</CardTitle>
+                            <CardSubtitle tag="h6" className="mb-2 text-muted">{book.volumeInfo.author}</CardSubtitle>
+                            <Button color="primary" size="sm" onClick={ () => addFavorites(book.volumeInfo.title, book.id) }>
+                            <MdStarBorder  /> Adicionar aos Favoritos
+                            </Button>
+                        </CardBody>
+                    </Card>
+                </Col>
+                ))
+            ) : ( <Col>Nenhum Livro Encontrado</Col>
+            )}
         </Row>
+        <ToastContainer />
     </Container>
   );
 }
