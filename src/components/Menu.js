@@ -8,6 +8,8 @@ import {
   NavItem,
   NavLink
 } from 'reactstrap';
+import { Link } from 'react-router-dom';
+
 
 const Menu = (props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,10 +24,10 @@ const Menu = (props) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
             <NavItem>
-              <NavLink href="">Home</NavLink>
+              <NavLink href="/">Home</NavLink>
             </NavItem>
             <NavItem>
-                <NavLink href="">Meus Livros Favoritos</NavLink>
+                <NavLink href="/my-favorites-books">My Favorites</NavLink>
             </NavItem>
           </Nav>
         </Collapse>

@@ -1,11 +1,13 @@
 import React from 'react';
-import { Button } from 'reactstrap';
+import Routes from './Routes';
+import Menu from './components/Menu';
 
 function App() {
   return (
-    <div className="App">
-      <Button color="danger">Dnager</Button>
-    </div>
+    <>
+      <Menu />
+      <Routes />
+    </>
   );
 }
 
